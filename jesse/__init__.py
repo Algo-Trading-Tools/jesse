@@ -198,20 +198,21 @@ def install_live(strict: bool) -> None:
 @cli.command()
 def run() -> None:
     validate_cwd()
-
-    # run all the db migrations
-    from jesse.services.migrator import run as run_migrations
-    import peewee
-    try:
-        run_migrations()
-    except peewee.OperationalError:
-        sleep_seconds = 10
-        print(f"Database wasn't ready. Sleep for {sleep_seconds} seconds and try again.")
-        time.sleep(sleep_seconds)
-        run_migrations()
-
     # read port from .env file, if not found, use default
     from jesse.services.env import ENV_VALUES
+
+    if not os.environ.get('FAST_RELOAD'):
+        # run all the db migrations
+        from jesse.services.migrator import run as run_migrations
+        import peewee
+        try:
+            run_migrations()
+        except peewee.OperationalError:
+            sleep_seconds = 10
+            print(f"Database wasn't ready. Sleep for {sleep_seconds} seconds and try again.")
+            time.sleep(sleep_seconds)
+            run_migrations()
+
     if 'APP_PORT' in ENV_VALUES:
         port = int(ENV_VALUES['APP_PORT'])
     else:
