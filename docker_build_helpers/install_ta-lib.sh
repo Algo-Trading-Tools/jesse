@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ -z "$1" ]; then
   INSTALL_LOC=/usr/local
 else
