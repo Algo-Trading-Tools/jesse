@@ -1,5 +1,5 @@
 ARG TEST_BUILD=0
-FROM arm64v8/python:3.9.12-slim-bullseye AS jesse_basic_env
+FROM python:3.9.12-slim-bullseye AS jesse_basic_env
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update \
