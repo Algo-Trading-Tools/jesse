@@ -7,6 +7,9 @@ on:
 
 jobs:
   docker:
+    jobContainer:
+      image: arm64v8/amazonlinux:latest
+
     runs-on: ubuntu-latest
     steps:
       - name: Set up QEMU
