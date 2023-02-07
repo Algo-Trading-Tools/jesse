@@ -227,7 +227,13 @@ class Strategy(ABC):
         self._submit_buy_orders()
 
     def _submit_buy_orders(self) -> None:
-        price_to_compare = self.price
+        if jh.is_livetrading():
+            price_to_compare = jh.round_price_for_live_mode(
+                self.price,
+                selectors.get_exchange(self.exchange).vars['precisions'][self.symbol]['price_precision']
+            )
+        else:
+            price_to_compare = self.price
 
         for o in self._buy:
             # MARKET order
@@ -243,7 +249,13 @@ class Strategy(ABC):
                 raise ValueError(f'Invalid order price: o[1]:{o[1]}, self.price:{self.price}')
 
     def _submit_sell_orders(self) -> None:
-        price_to_compare = self.price
+        if jh.is_livetrading():
+            price_to_compare = jh.round_price_for_live_mode(
+                self.price,
+                selectors.get_exchange(self.exchange).vars['precisions'][self.symbol]['price_precision']
+            )
+        else:
+            price_to_compare = self.price
 
         for o in self._sell:
             # MARKET order
@@ -942,7 +954,7 @@ class Strategy(ABC):
         Returns:
             [float] -- the current trading candle's current(close) price
         """
-        return self.position.current_price
+        return self.close
 
     @property
     def high(self) -> float:
@@ -1259,3 +1271,19 @@ class Strategy(ABC):
     @property
     def daily_balances(self):
         return store.app.daily_balance
+
+    @property
+    def is_backtesting(self) -> bool:
+        return jh.is_backtesting()
+
+    @property
+    def is_livetrading(self) -> bool:
+        return jh.is_livetrading()
+
+    @property
+    def is_papertrading(self) -> bool:
+        return jh.is_paper_trading()
+
+    @property
+    def is_live(self) -> bool:
+        return jh.is_live()
